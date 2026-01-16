@@ -1,0 +1,58 @@
+
+services:
+
+# Сервис db
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: chatdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    # Проверяем здоровье postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d chatdb"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+# Сервис migrate
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: [ "/app/goose" ]
+    command:
+      [
+        "-dir",
+        "/app/migrations",
+        "postgres",
+        "postgres://postgres:postgres@db:5432/chatdb?sslmode=disable",
+        "up"
+      ]
+    restart: "no"
+
+# Сервис api
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      PORT: ${PORT:-8080}
+      DATABASE_DSN: postgres://postgres:postgres@db:5432/chatdb?sslmode=disable
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:
