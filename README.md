@@ -56,62 +56,62 @@ DATABASE_DSN - DSN PostgreSQL
 
 ## Структура проекта
 
-hitalent/
-├── cmd/
-│   └── main.go                   # сборка зависимостей, запуск HTTP-сервера
-├── internal/
-│   ├── chat/
-│   │   ├── models.go             # модели Chat/Message + normalize/validate
-│   │   ├── errors.go             # доменные ошибки (ErrValidation, ErrNotFound)
-│   │   ├── repo.go               # репозиторий (GORM), CRUD для чатов/сообщений
-│   │   └── service.go            # бизнес-логика валидация, not found, limit
-│   ├── httpapi/
-│   │   ├── router.go             # роутинг на net/http 
-│   │   ├── api.go                # HTTP handlers (CreateChat/CreateMessage/GetChat/DeleteChat)
-│   │   ├── json.go               # decodeJSON/writeJSON/writeError 
-│   │   └── middleware.go         # middleware, recover + logging 
-│   └── storage/
-│       └── postgres.go           # подключение к PostgreSQL через GORM + настройки пула соединений
-├── migrations/
-│   └── 00001_init.sql            # goose миграция: таблицы chats и messages , каскадное удаление 
-├── tests/
-│   └── http_test.go              # тесты API 
-├── Dockerfile                    
-├── docker-compose.yml            # сервисы db, migrate, api
-├── Makefile                      # команды: up/down/logs/test/migrate-up
-├── go.mod
-├── go.sum
-└── README.md                    
+hitalent/  
+├── cmd/  
+│   └── main.go                   # сборка зависимостей, запуск HTTP-сервера  
+├── internal/  
+│   ├── chat/  
+│   │   ├── models.go             # модели Chat/Message + normalize/validate  
+│   │   ├── errors.go             # доменные ошибки (ErrValidation, ErrNotFound)  
+│   │   ├── repo.go               # репозиторий (GORM), CRUD для чатов/сообщений  
+│   │   └── service.go            # бизнес-логика валидация, not found, limit  
+│   ├── httpapi/  
+│   │   ├── router.go             # роутинг на net/http   
+│   │   ├── api.go                # HTTP handlers (CreateChat/CreateMessage/GetChat/DeleteChat)  
+│   │   ├── json.go               # decodeJSON/writeJSON/writeError   
+│   │   └── middleware.go         # middleware, recover + logging   
+│   └── storage/  
+│       └── postgres.go           # подключение к PostgreSQL через GORM + настройки пула соединений  
+├── migrations/  
+│   └── 00001_init.sql            # goose миграция: таблицы chats и messages , каскадное удаление   
+├── tests/  
+│   └── http_test.go              # тесты API   
+├── Dockerfile                       
+├── docker-compose.yml            # сервисы db, migrate, api  
+├── Makefile                      # команды: up/down/logs/test/migrate-up  
+├── go.mod  
+├── go.sum  
+└── README.md                      
+  
 
+## Запуск через Docker Compose  
+  
+### Требования  
+- установлен **Docker**  
+- установлен **Make**  
 
-## Запуск через Docker Compose
+### 1) Поднять сервисы и применить миграции  
+Из корня проекта:  
 
-### Требования
-- установлен **Docker** 
-- установлен **Make**
+`make up`
+`docker compose up -d --build`  
+  
+### 2) Остановить и удалить контейнеры + volume с БД  
 
-### 1) Поднять сервисы и применить миграции
-Из корня проекта:
-
-make up
-docker compose up -d --build
-
-### 2) Остановить и удалить контейнеры + volume с БД
-
-make down
-docker compose down -v
+`make down`  
+`docker compose down -v`  
 
 ### 3) Смотреть логи
 
-make logs
-docker compose logs -f --tail=200
+`make logs`
+`docker compose logs -f --tail=200`
 
 ### 4) Запустить тесты ( поднимается httptest сервер и выполняются HTTP запросы )
 
-make test
-go test ./... -v
+`make test`
+`go test ./... -v`
 
 ### 5) Запустить миграции вручную
 
-make migrate-up
-docker compose run --rm migrate
+`make migrate-up`
+`docker compose run --rm migrate`
