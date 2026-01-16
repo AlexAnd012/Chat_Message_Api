@@ -103,15 +103,15 @@ hitalent/
 
 ### 3) Смотреть логи
 
-`make logs`
+`make logs`  
 `docker compose logs -f --tail=200`
 
 ### 4) Запустить тесты ( поднимается httptest сервер и выполняются HTTP запросы )
 
-`make test`
+`make test`  
 `go test ./... -v`
 
 ### 5) Запустить миграции вручную
 
-`make migrate-up`
+`make migrate-up`  
 `docker compose run --rm migrate`
